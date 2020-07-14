@@ -12,8 +12,6 @@ Assignment question:
 x^5 + x - 6 congruent (0 mod 144)
 """
 
-# todo figure out
-
 # first, factor the modulus into a product of primes
 prime_factors = []
 if not sp.isprime(modulus):
