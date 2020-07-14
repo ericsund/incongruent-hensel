@@ -2,15 +2,17 @@ import sympy as sp
 import numpy as np
 
 modulus = 144
-# f = x^5 + x - 6
 x = sp.symbols('x')
 f = x**5 + x - 6
 f_prime = sp.diff(f)
 congruence = 0
 
 """
+Assignment question:
 x^5 + x - 6 congruent (0 mod 144)
 """
+
+# todo figure out
 
 # first, factor the modulus into a product of primes
 prime_factors = []
@@ -35,19 +37,37 @@ def solve_subproblem(p, count):
     i = 0
     level = 2
     while i < len(sols):
+
         # we don't want to exceed our maximum congruence
         if p**level > (prime_factors[count][0] ** prime_factors[count][1]):
             break
 
+        # f'(0) NOT congruent (0 mod 2) ?
+        if f_prime.replace(x, sols[i]) % p != congruence:
+            print("f'(" + str(sols[i]) + ") mod " + str(p) + " = " + str(f_prime.replace(x, sols[i]) % p) + " != " + str(congruence))
+            print("\t => lifts to a unique solution mod " + str(prime_factors[count][0] ** prime_factors[count][1]))
+            unique_sols[count] += 1
+            i += 1
+        
         # f'(0) congruent (0 mod 2) ?
-        if f_prime.replace(x, sols[i]) % p == congruence:
+        # lifts to unique solution mod 2^4
+        else:
             print("f'(" + str(sols[i]) + ") mod " + str(p) + " = " + str(f_prime.replace(x, sols[i]) % p))
             # stop once we've reach the biggest congruence class
             if p**(count+1) > 16:
                 print(sols)
                 break
+    
+            # f(1) NOT congruent 0 (mod 8) ?
+            if f.replace(x, sols[i]) % p**(level) != congruence:
+                print("f(" + str(sols[i]) + ") mod " + str(p**level) + " = " + str(f.replace(x, sols[i]) % (p**level)))
+                print("\t => no further solutions")
+                # there are no further solutions
+                i += 1
+                pass
+
             # f'(1) congruent 0 (mod 2) AND f(1) congruent 0 (mod 4) ?
-            if f.replace(x, sols[i]) % p**(level) == congruence:
+            else:
                 print("f(" + str(sols[i]) + ") mod " + str(p**level) + " = " + str(f.replace(x, sols[i]) % p**level))
                 # lifts to solutions in larger congruence classes
                 # find these congruence classes...
@@ -64,21 +84,6 @@ def solve_subproblem(p, count):
                 level += 1
                 i = 0
                 continue
-            # f(1) NOT congruent 0 (mod 8) ?
-            else:
-                print("f(" + str(sols[i]) + ") mod " + str(p**level) + " = " + str(f.replace(x, sols[i]) % (p**level)))
-                print("\t => no further solutions")
-                # there are no further solutions
-                i += 1
-                pass
-
-        # f'(0) NOT congruent (0 mod 2) ?
-        # lifts to unique solution mod 2^4
-        else:
-            print("f'(" + str(sols[i]) + ") mod " + str(p) + " = " + str(f_prime.replace(x, sols[i]) % p) + " != " + str(congruence))
-            print("\t => lifts to a unique solution mod " + str(prime_factors[count][0] ** prime_factors[count][1]))
-            unique_sols[count] += 1
-            i += 1
 
     print("===> subproblem on " + str(prime_factor[0]) + " prime complete!")
     
